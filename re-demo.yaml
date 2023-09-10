@@ -1,0 +1,20 @@
+apiVsersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: nginx-rs
+  namespace: default
+spec:
+  replicas: 3
+  selector:  # rs 管理的是具有 app=nginx 的 Pod
+    matchLabels:
+      app: nginx
+  template: # Pod 模板
+   metadata: # nginx-rs-xss123
+     labels: # 必须和上面的 matchLabels 保持一致
+       app: nginx
+  spec:
+    containers:
+    - name: nginx
+      image: nginx
+      ports:
+      - containerPort: 80
