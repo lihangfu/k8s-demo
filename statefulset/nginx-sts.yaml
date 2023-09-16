@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: web
+  namespace: default
+spec:
+  # 管理当前 StatefulSet 的服务名称，该服务必须先存在，并且负责该集合的网络表示
+  serviceName: "nginx-headless"
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.7.9
+        ports:
+        - name: web
+          containerPort: 80
+        volumeMounts:
+        - name: www
+          mountPath: /usr/share/nginx/html
+  volumeClaimTemplates: # 这是一个PVC的模板
+  - metadata:
+      name: www
+    spec: # accessModes、storage 必须和需要绑定的PV匹配
+      storageClassName: ""
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi # 必须小于等于PV中的
